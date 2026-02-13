@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امپراتوری گیم و موزیک امیر | نسخه نهایی V5 (Empire Edition)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+   <link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+<meta name="application-name" content="&nbsp;"/>
+<meta name="msapplication-TileColor" content="#FFFFFF" />
+<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <div id="weather-layer" class="weather-overlay"></div>
+
+    <audio id="audio-player"></audio>
+    <audio id="radio-stream" src="https://stream.zeno.fm/0r0xa792kwzuv" preload="none"></audio>
+
+    <div class="radio-bar" id="mini-player">
+        <div class="radio-info">
+            <div class="radio-visualizer hidden" id="viz">
+                <div class="bar" style="animation-duration: 0.5s"></div>
+                <div class="bar" style="animation-duration: 0.7s"></div>
+                <div class="bar" style="animation-duration: 0.3s"></div>
+                <div class="bar" style="animation-duration: 0.6s"></div>
+            </div>
+            <div>
+                <i class="fas fa-broadcast-tower" style="color:var(--danger)"></i>
+                <span id="track-name" style="font-size: 0.9rem;">رادیو Lo-Fi (آفلاین)</span>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary btn-sm" onclick="app.toggleRadio()"><i class="fas fa-play" id="radio-icon"></i></button>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 140px; left: 50%; transform: translateX(-50%); z-index: 3000;"></div>
+
+    <div id="login-overlay">
+        <div class="card login-box animate__animated animate__zoomIn" data-tilt>
+            <i class="fas fa-crown fa-3x" style="color: var(--accent); margin-bottom: 20px;"></i>
+            <h2>به امپراتوری نهایی امیر خوش آمدید</h2>
+            <p style="color: #aaa; margin-top: 10px;">نام امپراتور را وارد کنید:</p>
+            <input type="text" id="username" class="login-input" placeholder="نام کاربری...">
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="app.login()">شروع <i class="fas fa-rocket"></i></button>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <button class="btn btn-accent" style="flex:1; font-size: 0.8rem;" onclick="app.importSave()">📥 ایمپورت سیو</button>
+                <button class="btn" style="flex:1; font-size: 0.8rem; color: var(--danger);" onclick="app.resetData()">🗑️ پاکسازی</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="daily-modal" class="overlay hidden">
+        <div class="overlay-content" style="text-align: center;">
+            <i class="fas fa-calendar-check fa-4x" style="color: var(--success); margin-bottom: 20px;"></i>
+            <h2>پاداش روزانه!</h2>
+            <p>روز <span id="daily-streak" style="color:var(--accent)">1</span></p>
+            <div style="margin: 20px 0; font-size: 2rem; color: var(--gold);" id="daily-reward-amt">+100 سکه</div>
+            <button class="btn btn-success" onclick="app.claimDaily()">دریافت</button>
+        </div>
+    </div>
+
+    <div id="boss-overlay">
+        <i class="fas fa-dragon fa-5x animate__animated animate__wobble animate__infinite" style="color: var(--danger);"></i>
+        <h2 style="color: white; margin-top: 20px; font-size: 2rem;">حمله اژدها!</h2>
+        <p style="color: #ccc;">سریع کلیک کن تا نابودش کنی!</p>
+        <div class="boss-hp-bar"><div class="boss-hp-fill" id="boss-hp"></div></div>
+        <div style="font-size: 1.5rem; color: var(--gold);" id="boss-timer">10s</div>
+        <button class="btn btn-danger" style="margin-top: 20px; font-size: 1.5rem; padding: 20px 40px;" id="boss-btn" onclick="boss.hit()">حمله!</button>
+    </div>
+
+    <div id="app" class="hidden">
+        <header>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="position:relative;">
+                    <div id="avatar-frame-el" class="avatar-frame">
+                        <div id="avatar-display" style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div id="pet-display" style="position:absolute; bottom:-5px; right:-5px; font-size:1.2rem;"></div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; display:flex; align-items:center;" id="header-name-container">
+                        <span id="header-name">کاربر</span>
+                        <div id="active-tag-display"></div>
+                    </div>
+                    <div id="title-display" class="title-badge">تازه وارد</div>
+                    <div id="clan-display" class="clan-badge hidden"></div>
+                    <div style="font-size: 0.8rem; display: flex; align-items: center; margin-top: 3px;">
+                        <span class="level-badge" id="header-level">Lvl 1</span>
+                        <div class="xp-container" style="width: 60px;"><div class="xp-bar" id="header-xp"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="currency-box">
+                <span><i class="fas fa-coins"></i> <span id="header-coins">0</span></span>
+                <span style="border-right:1px solid #555; padding-right:10px;"><i class="fas fa-gem" style="color:cyan"></i> <span id="header-prestige">0</span></span>
+            </div>
+        </header>
+
+        <div class="container">
+            <div id="happy-hour-banner" class="animate__animated animate__pulse animate__infinite hidden" style="background: linear-gradient(90deg, #f1c40f, #e67e22); color: black; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-weight: bold;">
+                <i class="fas fa-clock"></i> ساعت طلایی فعال است! (سکه ۲ برابر)
+            </div>
+             <div id="weather-banner" class="hidden" style="background: rgba(0,0,255,0.2); border: 1px solid cyan; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px; color: cyan;">
+                <i class="fas fa-cloud-showers-heavy"></i> <span id="weather-text">باران می‌بارد! (رشد XP بیشتر)</span>
+            </div>
+
+            <div id="active-effects" style="margin-bottom: 10px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
+
+            <div class="tabs">
+                <button class="btn tab-btn active" onclick="app.switchTab('games')"><i class="fas fa-gamepad"></i> بازی‌ها</button>
+                <button class="btn tab-btn" onclick="app.switchTab('village')"><i class="fas fa-chess-rook"></i> دهکده</button> <button class="btn tab-btn" onclick="app.switchTab('inventory')"><i class="fas fa-suitcase"></i> کوله‌پشتی</button> 
+                <button class="btn tab-btn" onclick="app.switchTab('arena')"><i class="fas fa-swords"></i> آرنا</button> 
+                <button class="btn tab-btn" onclick="app.switchTab('market')"><i class="fas fa-chart-line"></i> کریپتو</button>
+                <button class="btn tab-btn" onclick="app.switchTab('academy')"><i class="fas fa-graduation-cap"></i> آکادمی</button>
+                <button class="btn tab-btn" onclick="app.switchTab('shop')"><i class="fas fa-store"></i> فروشگاه</button>
+                <button class="btn tab-btn" onclick="app.switchTab('quests')"><i class="fas fa-scroll"></i> ماموریت</button>
+                <button class="btn tab-btn" onclick="app.switchTab('social')"><i class="fas fa-users"></i> کلن و چت</button>
+                <button class="btn tab-btn" onclick="app.switchTab('darkzone')" style="border-color: #e74c3c; color: #e74c3c;"><i class="fas fa-skull"></i> منطقه ممنوعه</button>
+            </div>
+
+            <div id="tab-games">
+                <div class="card" style="background: linear-gradient(45deg, #e67e22, #f1c40f); color: black; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;" data-tilt>
+                    <div><h3><i class="fas fa-gift"></i> گردونه شانس</h3><p>جوایز ویژه!</p></div>
+                    <button class="btn" style="background: white; color: black;" onclick="app.openWheel()">چرخش</button>
+                </div>
+                
+                <div class="card" style="margin-bottom: 20px; border-color: var(--danger);" data-tilt>
+                    <h3><i class="fas fa-dungeon"></i> غارت قلعه (PvE)</h3>
+                    <p style="font-size:0.9rem; color:#aaa;">با ارتش خود به قلعه دشمن حمله کنید!</p>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="btn btn-danger" onclick="game.startRaid('easy')">قلعه چوبی (100 سکه)</button>
+                        <button class="btn btn-primary" onclick="game.startRaid('hard')">قلعه سنگی (500 سکه)</button>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="card" onclick="game.start(1)" data-tilt><i class="fas fa-mouse-pointer fa-2x" style="color: var(--primary);"></i><h3>کلیک‌مستر</h3></div>
+                    <div class="card" onclick="game.start(2)" data-tilt><i class="fas fa-brain fa-2x" style="color: var(--success);"></i><h3>ریاضیات</h3></div>
+                    <div class="card" onclick="game.start(3)" data-tilt><i class="fas fa-bolt fa-2x" style="color: var(--accent);"></i><h3>رفلکس</h3></div>
+                    <div class="card" onclick="game.start(4)" data-tilt><i class="fas fa-search fa-2x" style="color: #3498db;"></i><h3>شکار عدد</h3></div>
+                    <div class="card" onclick="game.start(5)" data-tilt><i class="fas fa-keyboard fa-2x" style="color: #e74c3c;"></i><h3>تایپیست</h3></div>
+                    <div class="card" onclick="game.start(6)" data-tilt><i class="fas fa-puzzle-piece fa-2x" style="color: #9b59b6;"></i><h3>کارت حافظه</h3></div>
+                    <div class="card" onclick="game.start(7)" data-tilt><i class="fas fa-coins fa-2x" style="color: #f1c40f;"></i><h3>شیر یا خط</h3></div>
+                    <div class="card" onclick="game.start(8)" data-tilt><i class="fas fa-hand-scissors fa-2x" style="color: #e67e22;"></i><h3>سنگ کاغذ قیچی</h3></div>
+                    <div class="card" onclick="game.start(9)" data-tilt><i class="fas fa-dice fa-2x" style="color: #ff7675;"></i><h3>ماشین اسلات</h3></div>
+                    <div class="card" onclick="game.start(10)" data-tilt><i class="fas fa-gavel fa-2x" style="color: #6c5ce7;"></i><h3>موش‌کوب</h3></div>
+                    <div class="card" onclick="game.start(11)" data-tilt><i class="fas fa-font fa-2x" style="color: #00cec9;"></i><h3>حدس کلمه</h3></div>
+                    <div class="card" onclick="game.start(12)" data-tilt><i class="fas fa-th fa-2x" style="color: #ffeaa7;"></i><h3>سیمون (رنگ)</h3></div>
+                    <div class="card" onclick="game.start(13)" data-tilt><i class="fas fa-worm fa-2x" style="color: #55efc4;"></i><h3>مار بازی</h3></div>
+                    <div class="card" onclick="game.start(14)" data-tilt><i class="fas fa-border-all fa-2x" style="color: #74b9ff;"></i><h3>دوز (X/O)</h3></div>
+                    <div class="card" onclick="game.start(15)" data-tilt><i class="fas fa-stopwatch fa-2x" style="color: #ff9f43;"></i><h3>تست سرعت</h3></div>
+                </div>
+            </div>
+
+            <div id="tab-village" class="hidden">
+                <div class="card" style="margin-bottom:20px; border-top: 3px solid var(--gold);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-chess-rook"></i> دهکده امپراتور</h3>
+                        <div id="village-shield-status" style="color:var(--text-main); font-size:0.9rem;">🛡️ سپر غیرفعال</div>
+                    </div>
+                    <p style="color:#aaa; font-size:0.9rem;">دهکده خود را بسازید و ارتش آماده کنید!</p>
+                </div>
+
+                <div class="village-grid" id="village-buildings"></div>
+
+                <h3 class="section-header"><i class="fas fa-users-cog"></i> پادگان ارتش</h3>
+                <div class="grid" id="village-army">
+                    <div class="card">
+                        <i class="fas fa-user-ninja fa-2x"></i> <h4>سرباز</h4>
+                        <p>تعداد: <span id="army-soldier">0</span></p>
+                        <button class="btn btn-sm btn-primary" onclick="village.train('soldier')">آموزش (50 سکه)</button>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-user-astronaut fa-2x" style="color:cyan"></i> <h4>غول</h4>
+                        <p>تعداد: <span id="army-giant">0</span></p>
+                        <button class="btn btn-sm btn-primary" onclick="village.train('giant')">آموزش (200 سکه)</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" style="width:100%; margin-top:20px; padding:15px; font-size:1.2rem;" onclick="village.findMatch()">⚔️ حمله به دیگران ⚔️</button>
+            </div>
+
+            <div id="tab-inventory" class="hidden">
+                <div class="card" style="margin-bottom: 20px; border-color: var(--text-bright);">
+                    <h3><i class="fas fa-user-shield"></i> تجهیزات فعال</h3>
+                    <div style="display:flex; justify-content:space-around; margin-top:10px;">
+                        <div style="text-align:center;">
+                            <i class="fas fa-khanda fa-2x" style="color:var(--danger)"></i>
+                            <p id="equip-weapon" style="color:#aaa; font-size:0.9rem;">خالی</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <i class="fas fa-shield-alt fa-2x" style="color:var(--primary)"></i>
+                            <p id="equip-armor" style="color:#aaa; font-size:0.9rem;">خالی</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:20px; background:linear-gradient(45deg, #2c3e50, #000);">
+                    <h3><i class="fas fa-hammer"></i> استخراج دستی (Minecraft)</h3>
+                    <p style="font-size:0.8rem; color:#aaa">برای استخراج کلیک کنید (نیاز به ابزار نیست ولی ابزار سرعت می‌دهد)</p>
+                    <button class="btn btn-warning" style="margin-top:10px; width:100%" onclick="rpg.mineResource()">⛏️ استخراج منابع</button>
+                </div>
+
+                <h3 class="section-header">کوله‌پشتی</h3>
+                <div id="inventory-list" class="grid" style="grid-template-columns: 1fr;"></div>
+                
+                <h3 class="section-header"><i class="fas fa-tools"></i> میز کار (Crafting)</h3>
+                <div id="crafting-list" class="grid"></div>
+            </div>
+
+            <div id="tab-arena" class="hidden">
+                <div class="card" style="margin-bottom:20px;">
+                    <h3><i class="fas fa-fist-raised"></i> میدان نبرد</h3>
+                    <div id="arena-status" style="margin:15px 0; text-align:center;">
+                        <button class="btn btn-danger" onclick="arena.startBattle()">شروع مبارزه (هزینه: 200 سکه)</button>
+                    </div>
+                </div>
+                <div id="battle-ui" class="hidden">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <div style="text-align:center">
+                            <i class="fas fa-user fa-2x" style="color:green"></i>
+                            <div style="width:100px; background:#333; height:10px; margin-top:5px;"><div id="player-hp-bar" style="width:100%; height:100%; background:green"></div></div>
+                            <span id="player-hp-text">100/100</span>
+                        </div>
+                        <div style="text-align:center">
+                            <i class="fas fa-skull fa-2x" style="color:red"></i>
+                            <div style="width:100px; background:#333; height:10px; margin-top:5px;"><div id="enemy-hp-bar" style="width:100%; height:100%; background:red"></div></div>
+                            <span id="enemy-hp-text">???</span>
+                        </div>
+                    </div>
+                    <div class="battle-log" id="battle-log"></div>
+                    <div style="display:flex; gap:10px; justify-content:center;">
+                        <button class="btn btn-primary" onclick="arena.attack()">حمله ⚔️</button>
+                        <button class="btn btn-warning" onclick="arena.heal()">درمان 💊</button>
+                        <button class="btn" onclick="arena.run()">فرار 🏃</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-market" class="hidden">
+                <div class="news-ticker">
+                    <div class="news-content" id="market-news">... در حال بارگذاری اخبار بازار ...</div>
+                </div>
+                <br>
+                <div class="card bank-card" style="margin-bottom:20px;">
+                    <h3><i class="fas fa-piggy-bank"></i> بانک مرکزی</h3>
+                    <p>موجودی بانک: <span id="bank-balance" style="font-weight:bold; color:white;">0</span> سکه</p>
+                    <p style="font-size:0.8rem;">سود روزانه: 5% (هر دقیقه واریز میشود)</p>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <input type="number" id="bank-input" class="login-input" style="margin:0; width:100px;" placeholder="مبلغ">
+                        <button class="btn btn-success" onclick="app.bankDeposit()">واریز</button>
+                        <button class="btn btn-danger" onclick="app.bankWithdraw()">برداشت</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:20px; background: rgba(0,0,0,0.5);">
+                    <h3><i class="fas fa-chart-bar"></i> بازار ارز دیجیتال (زنده)</h3>
+                    <p style="color:#888; font-size:0.9rem;">قیمت‌ها هر ۵ ثانیه نوسان دارند. ارزان بخر، گران بفروش!</p>
+                </div>
+                
+                <div id="crypto-list-container"></div>
+            </div>
+
+            <div id="tab-academy" class="hidden">
+                <div class="card" style="border: 2px solid var(--gold); margin-bottom: 20px;" data-tilt>
+                    <h3><i class="fas fa-crown"></i> میراث (Prestige)</h3>
+                    <p>با رسیدن به سطح 50، می‌توانید همه چیز را ریست کنید و مدال الماس بگیرید.</p>
+                    <p style="color: var(--accent);">تاثیر: تمام درآمدها 2 برابر می‌شود!</p>
+                    <button class="btn btn-accent" onclick="app.doPrestige()" style="margin-top:10px;">انجام پرستیژ</button>
+                </div>
+
+                <h3 class="section-header"><i class="fas fa-graduation-cap"></i> مهارت‌ها</h3>
+                <div class="grid">
+                    <div class="card">
+                        <i class="fas fa-fist-raised fa-2x" style="color:var(--danger)"></i>
+                        <h3>قدرت کلیک</h3>
+                        <p id="skill-click-lvl">Level: 0</p>
+                        <button class="btn btn-primary" onclick="skills.upgrade('click')">ارتقا (<span id="skill-click-cost">100</span>)</button>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-star fa-2x" style="color:var(--accent)"></i>
+                        <h3>هوش مصنوعی</h3>
+                        <p id="skill-xp-lvl">Level: 0</p>
+                        <button class="btn btn-primary" onclick="skills.upgrade('xp')">ارتقا (<span id="skill-xp-cost">150</span>)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-shop" class="hidden">
+                <div class="promo-area card">
+                    <h4><i class="fas fa-ticket-alt"></i> کد هدیه دارید؟</h4>
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <input type="text" id="promo-code" class="login-input" style="margin:0" placeholder="کد را وارد کنید (مثلا AMIR)">
+                        <button class="btn btn-success" onclick="expansion.redeemCode()">ثبت</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px; background: rgba(46, 204, 113, 0.1); border-color: var(--success); margin-top: 20px;">
+                    <h3><i class="fas fa-hammer"></i> ماینینگ</h3>
+                    <div id="mining-stats" style="margin-top: 10px; font-weight: bold; color: var(--success);">درآمد فعلی: 0 سکه در دقیقه</div>
+                </div>
+                
+                <h3 class="section-header"><i class="fas fa-city"></i> املاک (Tycoon)</h3><div class="grid" id="shop-realestate-list"></div> 
+                <h3 class="section-header">جادوها (Consumables)</h3><div class="grid" id="shop-consumable-list"></div>
+                <h3 class="section-header">تگ‌های کاربری</h3><div class="grid" id="shop-tag-list"></div>
+                <h3 class="section-header">فونت‌های نئونی</h3><div class="grid" id="shop-font-list"></div>
+                <h3 class="section-header">قاب آواتار</h3><div class="grid" id="shop-frame-list"></div>
+                <h3 class="section-header">ماینرها</h3><div class="grid" id="shop-miner-list"></div>
+                <h3 class="section-header">حیوانات خانگی (با قابلیت ارتقا)</h3><div class="grid" id="shop-pet-list"></div>
+                <h3 class="section-header">تم‌ها</h3><div class="grid" id="shop-theme-list"></div>
+                <h3 class="section-header">موزیک (10 ترک برتر)</h3><div class="grid" id="shop-music-list"></div>
+                <h3 class="section-header">آواتار</h3><div class="grid" id="shop-avatar-list"></div>
+            </div>
+
+            <div id="tab-quests" class="hidden">
+                <h3 class="section-header"><i class="fas fa-medal"></i> دستاوردها</h3>
+                <div class="grid" id="achievements-list" style="margin-bottom:20px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));"></div>
+                <h3 class="section-header"><i class="fas fa-tasks"></i> ماموریت‌های روزانه</h3>
+                <div id="quest-list"></div>
+            </div>
+
+            <div id="tab-social" class="hidden">
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="card">
+                        <h3><i class="fas fa-shield-alt"></i> سیستم کلن (اتحاد)</h3>
+                        <p style="font-size:0.9rem; color:#aaa; margin-bottom:10px;">عضو شوید تا چت اختصاصی داشته باشید!</p>
+                        <div style="display:flex; gap:10px; overflow-x:auto;" id="clan-list">
+                            <button class="btn" style="border:1px solid var(--accent)" onclick="social.joinClan('Gamer')">گیمرها</button>
+                            <button class="btn" style="border:1px solid cyan" onclick="social.joinClan('Miner')">ماینرها</button>
+                            <button class="btn" style="border:1px solid lime" onclick="social.joinClan('Rich')">پولدارها</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-trophy"></i> برترین‌ها</h3>
+                        <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+                            <tbody id="leaderboard-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-comments"></i> چت روم</h3>
+                        <div class="chat-box" id="chat-box" style="height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; margin-bottom: 10px;"></div>
+                        <div class="chat-input-area" style="display: flex; gap: 5px;">
+                            <input type="text" id="chat-input" class="login-input" style="margin: 0; padding: 10px; flex:1;" placeholder="پیام بگذارید...">
+                            <button class="btn btn-primary" onclick="social.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-darkzone" class="hidden">
+                <div class="card dark-zone-card" style="text-align:center;" data-tilt>
+                    <h2 class="dark-zone-title"><i class="fas fa-biohazard"></i> منطقه ممنوعه <i class="fas fa-biohazard"></i></h2>
+                    <p style="color: #ccc; margin-top: 10px;">به تاریکی خوش آمدید. اینجا قوانین متفاوت است.</p>
+                    <p style="font-size: 0.9rem; color: #e74c3c;">ریسک بالا = پاداش فضایی</p>
+                </div>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="card" style="border-color: #555;" data-tilt>
+                        <h3><i class="fas fa-dice-d20"></i> قمار مرگبار (50/50)</h3>
+                        <p>یا دو برابر کن، یا همه رو بباز.</p>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-danger" onclick="expansion.playDarkGamble(1000)">شرط 1000 سکه</button>
+                            <button class="btn btn-danger" onclick="expansion.playDarkGamble(5000)">شرط 5000 سکه</button>
+                            <button class="btn" style="background:black; color:red; border:1px solid red" onclick="expansion.playDarkGamble('all')">کل موجودی! 🔥</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="border-color: var(--accent);">
+                        <h3><i class="fas fa-chart-line"></i> ترید اهرمی (5x)</h3>
+                        <p style="font-size:0.8rem; color:#aaa;">اگر قیمت بالا برود ۵ برابر سود، اگر پایین بیاید ۵ برابر ضرر!</p>
+                        <button class="btn btn-success" onclick="market.tradeLeverage('btc')">Long BTC (1000 سکه)</button>
+                    </div>
+
+                    <div class="card" style="border-color: #555;" data-tilt>
+                        <h3><i class="fas fa-flask"></i> آزمایشگاه شیمی</h3>
+                        <p>ترکیب مواد برای ساخت اکسیرهای کمیاب.</p>
+                        <button class="btn btn-accent" onclick="expansion.mixPotions()">ترکیب مواد (500 سکه)</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <h3>مالک و سازنده: <a href="https://amirsweb.ir" target="_blank">امیر نصرت زهی</a></h3>
+            <p style="color: #666; font-size: 0.9rem;">تمامی حقوق محفوظ است © ۲۰۲۶</p>
+            <p style="color: var(--primary); font-size: 0.8rem; margin-top: 5px;">Updated with V5 (Empire Edition)</p>
+            <div style="margin-top: 10px;">
+                <button class="btn btn-sm" onclick="app.exportSave()">📤 خروجی سیو</button>
+            </div>
+        </footer>
+    </div>
+
+    <div id="game-modal" class="overlay hidden">
+        <div class="overlay-content">
+            <button class="btn btn-danger" style="position: absolute; top: 10px; left: 10px;" onclick="game.close()">خروج</button>
+            <h2 id="game-title" style="text-align: center; color: var(--accent);">بازی</h2>
+            <div id="game-area" style="min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px 0;"></div>
+            <p id="game-status" style="text-align: center; color: #888;">آماده؟</p>
+        </div>
+    </div>
+
+    <div id="wheel-modal" class="overlay hidden">
+        <div class="overlay-content" style="text-align: center; background: #111; overflow:visible;">
+            <button class="btn" style="position: absolute; top: 10px; left: 10px;" onclick="app.closeWheel()"><i class="fas fa-times"></i></button>
+            <h2 style="color: var(--gold); margin-bottom: 20px;">گردونه شانس حرفه‌ای</h2>
+            
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <canvas id="wheel-canvas" width="300" height="300"></canvas>
+                <div class="wheel-center-btn" onclick="app.spinWheel()">چرخش</div>
+            </div>
+
+            <p id="wheel-result" style="margin-top: 30px; font-weight: bold; font-size: 1.2rem;">شانست رو امتحان کن!</p>
+        </div>
+    </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<style>
+    /* استایل اختصاصی برای بخش آنلاین */
+    #online-hub {
+        background: #0b0c10;
+        border: 2px solid #ffd700;
+        border-radius: 15px;
+        padding: 15px;
+        margin: 20px auto;
+        max-width: 600px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+    .auth-box input {
+        padding: 8px;
+        margin: 5px;
+        background: #1f2833;
+        border: 1px solid #45a29e;
+        color: white;
+        border-radius: 5px;
+    }
+    .chat-container {
+        height: 250px;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid #45a29e;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        text-align: right;
+    }
+    .chat-msg { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 2px; }
+    .sender-name { color: #ffd700; font-weight: bold; }
+    .leaderboard-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #333; }
+    .hidden { display: none; }
+    .btn-online { background: #45a29e; color: black; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+    .btn-online:hover { background: #66fcf1; }
+</style>
+
+<div id="online-hub">
+    <div id="auth-section">
+        <h3 style="color: #66fcf1;">🌐 ورود به امپراتوری آنلاین</h3>
+        <p style="font-size: 12px; color: #aaa;">برای ذخیره دائمی سکه‌ها و چت کردن وارد شوید</p>
+        <div class="auth-box">
+            <input type="email" id="email-in" placeholder="ایمیل شما">
+            <input type="password" id="pass-in" placeholder="رمز عبور (حداقل 6 رقم)">
+            <br>
+            <button class="btn-online" onclick="onlineGame.login()">ورود / ثبت‌نام</button>
+        </div>
+    </div>
+
+    <div id="profile-section" class="hidden">
+        <p>👤 بازیکن: <span id="player-email" style="color: #66fcf1;"></span></p>
+        <button class="btn-online" onclick="onlineGame.logout()" style="background: #e74c3c; color: white;">خروج</button>
+        
+        <hr style="border-color: #333; margin: 15px 0;">
+
+        <h4 style="color: #ffd700;">🏆 برترین امپراتورها</h4>
+        <div id="leaderboard-list" style="margin-bottom: 20px;">
+            <div>در حال بارگذاری...</div>
+        </div>
+
+        <h4 style="color: #66fcf1;">💬 چت جهانی</h4>
+        <div id="chat-box" class="chat-container"></div>
+        <div style="display: flex; margin-top: 5px;">
+            <input type="text" id="chat-input" placeholder="پیام..." style="flex: 1; padding: 5px; background: #222; color: white; border: 1px solid #444;">
+            <button class="btn-online" onclick="onlineGame.sendMessage()">ارسال</button>
+        </div>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
