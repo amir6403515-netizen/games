@@ -73,16 +73,16 @@ let user = JSON.parse(JSON.stringify(defaultUser));
 
 const shopItems = {
     music: [
-        { id: 'm1', name: "موزیک ۱(بغلم کن)", price: 100, file: 'music1.mp3' },
-        { id: 'm2', name: "موزیک ۲(نصف شب)", price: 300, file: 'music2.mp3' },
-        { id: 'm3', name: "موزیک ۳(عجب)", price: 600, file: 'music3.mp3' },
-        { id: 'm4', name: "موزیک ۴(مال من باش)", price: 1000, file: 'music4.mp3' },
-        { id: 'm5', name: "موزیک ۵(من باهات قهرم)", price: 2000, file: 'music5.mp3' },
-        { id: 'm6', name: "موزیک ۶ (افعی)", price: 2500, file: 'music6.mp3' },
-        { id: 'm7', name: "موزیک ۷ (عجب 2)", price: 3000, file: 'music7.mp3' },
-        { id: 'm8', name: "موزیک ۸ (بهشت)", price: 3500, file: 'music8.mp3' },
-        { id: 'm9', name: "موزیک ۹ (هنوزم)", price: 4000, file: 'music9.mp3' },
-        { id: 'm10', name: "موزیک ۱۰ (پرواز)", price: 5000, file: 'music10.mp3' }
+        { id: 'm1', name: "موزیک ۱(", price: 100, file: 'music1.mp3' },
+        { id: 'm2', name: "موزیک ۲(", price: 300, file: 'music2.mp3' },
+        { id: 'm3', name: "موزیک ۳", price: 600, file: 'music3.mp3' },
+        { id: 'm4', name: "موزیک ۴(", price: 1000, file: 'music4.mp3' },
+        { id: 'm5', name: "موزیک ۵", price: 2000, file: 'music5.mp3' },
+        { id: 'm6', name: "موزیک ۶ ", price: 2500, file: 'music6.mp3' },
+        { id: 'm7', name: "موزیک ۷ ", price: 3000, file: 'music7.mp3' },
+        { id: 'm8', name: "موزیک ۸ ", price: 3500, file: 'music8.mp3' },
+        { id: 'm9', name: "موزیک ۹ ", price: 4000, file: 'music9.mp3' },
+        { id: 'm10', name: "موزیک ۱۰ ", price: 5000, file: 'music10.mp3' }
     ],
     avatars: [
         { id: 'a1', name: "نینجا", price: 500, icon: "user-ninja" },
@@ -1910,5 +1910,6 @@ auth.onAuthStateChanged((userParam) => {
         document.getElementById('profile-section').classList.add('hidden');
     }
 });
+
 
 window.onload = app.init;
